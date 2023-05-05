@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+//import camera icon 
+import { Ionicons } from '@expo/vector-icons';
+
 import { Camera } from 'expo-camera';
 
 export default function CameraScreen({ navigation }) {
@@ -17,7 +20,28 @@ export default function CameraScreen({ navigation }) {
     if (cameraRef.current) {
       const options = { quality: 0.5, base64: true, skipProcessing: true };
       const data = await cameraRef.current.takePictureAsync(options);
-      navigation.navigate('Detection', { image: data.base64 });
+      //navigation.navigate('Detection', { image: data.base64 });
+      const imageData = data.base64;
+    
+      fetch('http://192.168.1.16:5000/upload', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          image: imageData,
+        }),
+      })
+      .then(response => response.json())
+      .then(result => {
+        console.log('Success:', result);
+        console.log(result);
+        // navigate to next screen
+        // navigation.navigate('Detection', { image: data.base64 });
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
     }
   };
 
@@ -40,9 +64,14 @@ export default function CameraScreen({ navigation }) {
           }}>
           <TouchableOpacity
             style={{
-              flex: 0.1,
+              flex: 0.2,
               alignSelf: 'flex-end',
               alignItems: 'center',
+              borderRadius:5,
+              backgroundColor: 'rgba(0,0,0,0.5)',
+              marginBottom: 50,
+              marginLeft: 100,
+
             }}
             onPress={() => {
               setType(
@@ -51,22 +80,30 @@ export default function CameraScreen({ navigation }) {
                   : Camera.Constants.Type.back
               );
             }}>
-            <Text style={{ fontSize: 18, marginBottom: 10, color: 'white' }}>
-              {' '}
-              Flip{' '}
-            </Text>
+              <Ionicons name="camera-reverse" size={32} color="white"/>
+            {/* // <Text style={{ fontSize: 18, marginBottom: 10, color: 'white' }}>
+            //   {' '}
+            //   Flip{' '}
+            // </Text> */}
           </TouchableOpacity>
           <TouchableOpacity
             style={{
-              flex: 0.1,
+              flex: 0.2,
               alignSelf: 'flex-end',
               alignItems: 'center',
+              borderRadius:5,
+              backgroundColor: 'rgba(0,0,0,0.5)',
+              marginBottom: 50,
+              marginLeft: 130,
+
             }}
             onPress={takePicture}>
-            <Text style={{ fontSize: 18, marginBottom: 10, color: 'white', borderRadius:2}}>
+            <Ionicons name="camera" size={32} color="white" 
+            />
+            {/* <Text style={{ fontSize: 12, marginBottom: 10, color: 'white', borderRadius:5}}>
               {' '}
               Take Picture{' '}
-            </Text>
+            </Text> */}
           </TouchableOpacity>
         </View>
       </Camera>
@@ -74,4 +111,10 @@ export default function CameraScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flex: 0.1,
+    backgroundColor: 'transparent',
+    flexDirection: 'row',
+  }
+});
