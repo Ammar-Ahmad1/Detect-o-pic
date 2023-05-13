@@ -23,7 +23,7 @@ export default function CameraScreen({ navigation }) {
       //navigation.navigate('Detection', { image: data.base64 });
       const imageData = data.base64;
     
-      fetch('http://192.168.1.16:5000/upload', {
+      fetch('http://192.168.1.7:5000/upload', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
